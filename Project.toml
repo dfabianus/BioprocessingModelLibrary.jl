@@ -4,6 +4,7 @@ authors = ["Fabian Müller"]
 version = "1.0.0-DEV"
 
 [deps]
+Catalyst = "479239e8-5488-4da2-87a7-35f2df7eef83"
 IfElse = "615f187c-cbe4-4ef1-ba3b-2fcf58d6d173"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"

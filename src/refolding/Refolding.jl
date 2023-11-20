@@ -1,8 +1,9 @@
 module Refolding
 
-export Kiefhaber
+export Kiefhaber, Kiefhaber_network
 
 using ModelingToolkit
+using Catalyst
 
 @parameters t
 Dt = Differential(t)
