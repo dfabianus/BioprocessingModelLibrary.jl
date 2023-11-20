@@ -1,12 +1,9 @@
 @mtkmodel Kiefhaber begin
     @parameters begin
-        t
         n = 2
         k_n = 0.1
         k_a = 0.1
     end
-
-    Dt = Differential(t)
 
     @variables begin
         I(t)
