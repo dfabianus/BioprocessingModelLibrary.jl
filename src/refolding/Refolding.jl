@@ -1,6 +1,6 @@
 module Refolding
 
-export Kiefhaber, Kiefhaber_network
+export Kiefhaber, Kiefhaber_B, Kiefhaber_network
 
 using ModelingToolkit
 using Catalyst
