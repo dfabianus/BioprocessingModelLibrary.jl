@@ -18,7 +18,14 @@
     end
 end
 
-Kiefhaber_network = @reaction_network begin
-    k_n, I --> N
-    k_a, 2*I --> A
-  end
+function Kiefhaber_network()
+    k_n(a_n, b_n, D) = a_n * (1 + D) ^ b_n
+    k_a(a_a, b_a, D) = a_a * (1 + D) ^ b_a
+
+    Kiefhaber_network = @reaction_network begin
+        k_n(a_n, b_n, D), I --> N
+        k_a(a_a, b_a, D), 2*I --> A
+    end
+
+    return Kiefhaber_network
+end
