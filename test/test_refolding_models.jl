@@ -43,6 +43,7 @@ using Test
 end
 
 @testset "test_Kiefhaber_B" begin
+    tspan = (0.0, 10.0)
     @named kiefhaber_model = Kiefhaber_B()
     sys = structural_simplify(kiefhaber_model)
 
