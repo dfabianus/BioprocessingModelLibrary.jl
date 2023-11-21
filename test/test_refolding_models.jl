@@ -46,7 +46,6 @@ end
     tspan = (0.0, 10.0)
     @named kiefhaber_model = Kiefhaber_B()
     sys = structural_simplify(kiefhaber_model)
-
     prob = ODEProblem(sys, 
     [sys.I=>1.0±0.1, sys.N=>0.00±0.0, sys.A=>0.0±0.0], (0.0, 10.0),
     [sys.a_n => 1.3343±0.0, sys.a_a => 12.0465±0.0, sys.b_n => -8.6824±0.7182, sys.b_a => -16.7869±2.5716, sys.D => 0.1])
@@ -61,8 +60,8 @@ end
 
 # Reaction network models from Catalyst.jl are based on molar concentration, not mass concentrations.
 @testset "test_Kiefhaber_network" begin
+    tspan = (0.0, 10.0)
     kiefhaber_network = Kiefhaber_network()
-
     prob = ODEProblem(kiefhaber_network, 
         [:I => 1.0±0.1, :N => 0.0±0.0, :A => 0.0±0.0], 
         tspan, 
