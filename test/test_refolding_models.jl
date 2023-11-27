@@ -17,7 +17,7 @@ using Test
     [sys.k_n=>0.2, sys.k_a=>0.1])
     sol_1 = solve(kiefhaber_prob_1, Tsit5(), saveat=0.1)
     @test sol_1.retcode == Success
-    display(plot(sol_1, idxs=[sys.I, sys.N, sys.A], label=["I" "N" "A"], title="Testset Kiefhaber (Test 1: Standard simulation)", xlabel="Time (h)", ylabel="Concentration (M)"))
+    display(plot(sol_1, idxs=[sys.I, sys.N, sys.A], label=["I" "N" "A"], title="Testset Kiefhaber (Test 1: Standard simulation)", xlabel="Time (h)", ylabel="Concentration (g/L)"))
 
     kiefhaber_prob_2 = ODEProblem(sys, 
     [sys.I=>1.0±0.1, sys.N=>0.00±0.0, sys.A=>0.0±0.0], (0.0, 10.0),
@@ -25,7 +25,7 @@ using Test
     sol_2 = solve(kiefhaber_prob_2, Tsit5(), saveat=0.1)
     @test sol_2.retcode == Success
     ts = range(tspan..., length=100)
-    p = plot(ts, sol_2(ts, idxs=1).u, label="I(t)", title="Testset Kiefhaber (Test 2: MonteCarloMeasurements)", xlabel="Time (h)", ylabel="Concentration (M)")
+    p = plot(ts, sol_2(ts, idxs=1).u, label="I(t)", title="Testset Kiefhaber (Test 2: MonteCarloMeasurements)", xlabel="Time (h)", ylabel="Concentration (g/L)")
     plot!(p, ts, sol_2(ts, idxs=2).u, label="N(t)")
     plot!(p, ts, sol_2(ts, idxs=3).u, label="A(t)")
     display(p)
@@ -36,7 +36,7 @@ using Test
     sol_3 = solve(kiefhaber_prob_3, Tsit5(), saveat=0.1)
     @test sol_3.retcode == Success
     ts = range(tspan..., length=100)
-    p = plot(ts, sol_3(ts, idxs=1).u, label="I(t)", title="Testset Kiefhaber (Test 3: MonteCarloMeasurements)", xlabel="Time (h)", ylabel="Concentration (M)")
+    p = plot(ts, sol_3(ts, idxs=1).u, label="I(t)", title="Testset Kiefhaber (Test 3: MonteCarloMeasurements)", xlabel="Time (h)", ylabel="Concentration (g/L)")
     plot!(p, ts, sol_3(ts, idxs=2).u, label="N(t)")
     plot!(p, ts, sol_3(ts, idxs=3).u, label="A(t)")
     display(p)
@@ -52,7 +52,7 @@ end
     sol = solve(prob, Tsit5(), saveat=0.1)
     @test sol.retcode == Success
     ts = range(tspan..., length=100)
-    p = plot(ts, sol(ts, idxs=1).u, label="I(t)", title="Testset Kiefhaber (Test 4: Rate dependency on D)", xlabel="Time (h)", ylabel="Concentration (M)")
+    p = plot(ts, sol(ts, idxs=1).u, label="I(t)", title="Testset Kiefhaber (Test 4: Rate dependency on D)", xlabel="Time (h)", ylabel="Concentration (g/L)")
     plot!(p, ts, sol(ts, idxs=2).u, label="N(t)")
     plot!(p, ts, sol(ts, idxs=3).u, label="A(t)")
     display(p)
@@ -71,7 +71,7 @@ end
     ts = range(tspan..., length=100)
     p = plot(ts, sol(ts, idxs=1).u, label = "I(t)")
     plot!(p, ts, sol(ts, idxs=2).u, label = "N(t)",
-    xlabel="Time (h)", ylabel="Concentration (M)", title="Testset Kiefhaber Network (Test 1)")
+    xlabel="Time (h)", ylabel="Concentration (mol/L)", title="Testset Kiefhaber Network (Test 1)")
     plot!(p, ts, sol(ts, idxs=3).u, label = "A(t)")
     display(p)
 end

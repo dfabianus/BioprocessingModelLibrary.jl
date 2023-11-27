@@ -7,13 +7,11 @@ k_a_fun(a_a, b_a, D) = a_a * (1 + D) ^ b_a
         k_n = 0.1 # refolding rate
         k_a = 0.1 # aggregation rate
     end
-
     @variables begin
         I(t)
         N(t)
         A(t)
     end
-
     @equations begin
         Dt(I) ~ -k_n*I - k_a*I ^ n 
         Dt(N) ~ k_n*I
@@ -30,7 +28,6 @@ end
         b_a = -16.7869
         D = 0.1
     end
-
     @variables begin
         I(t)
         N(t)
@@ -38,7 +35,6 @@ end
         k_n(t) # refolding rate
         k_a(t) # aggregation rate
     end
-
     @equations begin
         Dt(I) ~ -k_n*I - k_a*I ^ n 
         Dt(N) ~ k_n*I
@@ -53,7 +49,6 @@ function Kiefhaber_network()
         k_n_fun(a_n, b_n, D), I --> N
         k_a_fun(a_a, b_a, D), 2*I --> A
     end
-
     return Kiefhaber_network
 end
 
