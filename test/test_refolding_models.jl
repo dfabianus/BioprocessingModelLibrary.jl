@@ -119,18 +119,61 @@ end
 
 @testset "test_MTK_Catalyst_Connections" begin
     sys = FLUMO_COMBINED_3()
-    p = (sys.k_a => 1.0, sys.k_ac => 1.0, sys.k_ic => 1.0, sys.k_nc => 1.0, sys.k_n => 1.0, sys.k_cn => 1.0, sys.c_Din => 1.0)
+    p = (sys.k_a => 1.0, sys.k_ac => 1.0, sys.k_ic => 1.0, sys.k_nc => 1.0, 
+    sys.k_n => 1.0, sys.k_cn => 1.0, sys.c_Din => 1.0)
     tspan = (0.,20.)
-    u0 = [sys.D => 1.0, sys.I => 1.0, sys.A => 1.0, sys.C => 1.0, sys.IC => 1.0, sys.N => 1.0, sys.NC => 1.0]
+    u0 = [sys.D => 1.0, sys.I => 1.0, sys.A => 1.0, sys.C => 1.0, sys.IC => 1.0, 
+    sys.N => 1.0, sys.NC => 1.0]
     oprob = ODEProblem(sys, u0, tspan, p)
     osol  = solve(oprob, Tsit5())
     @test osol.retcode == Success
     
     sys = FLUMO_COMBINED_4()
-    p = (sys.reactor.c_Din => 5, sys.reactions_ODE.k_a => 1.0, sys.reactions_ODE.k_c => 1.0, sys.reactions_ODE.a_n => 1.0, sys.reactions_ODE.b_n => 1.0)
+    p = (sys.reactor.c_Din => 5, sys.reactions_ODE.k_a => 1.0, sys.reactions_ODE.k_c => 1.0, 
+    sys.reactions_ODE.a_n => 1.0, sys.reactions_ODE.b_n => 1.0)
     tspan = (0.,20.)
-    u0 = [sys.reactor.D => 1.0, sys.reactions_ODE.I => 1.0, sys.reactions_ODE.A => 1.0, sys.reactions_ODE.C => 1.0, sys.reactions_ODE.IC => 1.0, sys.reactions_ODE.N => 1.0]
+    u0 = [sys.reactor.D => 1.0, sys.reactions_ODE.I => 1.0, sys.reactions_ODE.A => 1.0, 
+    sys.reactions_ODE.C => 1.0, sys.reactions_ODE.IC => 1.0, sys.reactions_ODE.N => 1.0]
     oprob = ODEProblem(sys, u0, tspan, p)
     osol  = solve(oprob, Tsit5())
     @test osol.retcode == Success
+
+    sys = FLUMO_COMBINED_5()
+    p = (sys.reactor.c_Din => 5, sys.kinetics.a_n => 1.0, sys.kinetics.b_n => 1.0, 
+        sys.kinetics.a_a => 1.0, sys.kinetics.a_ac => 1.0, sys.kinetics.a_ic => 1.0,
+        sys.kinetics.a_nc => 1.0, sys.kinetics.a_cn => 1.0
+    )
+    u0 = [sys.reactor.D => 1.0, sys.reactions_ODE.I => 1.0, sys.reactions_ODE.A => 0.0, 
+        sys.reactions_ODE.C => 0.5, sys.reactions_ODE.IC => 0.0, sys.reactions_ODE.NC => 0.0,
+        sys.reactions_ODE.N => 0.0
+    ]
+    tspan = (0.,5.)
+    oprob = ODEProblem(sys, u0, tspan, p)
+    osol  = solve(oprob, Tsit5())
+    @test osol.retcode == Success
+    p = plot(osol, title = "Testset MTK Catalyst Connections", xlabel="Time (h)", ylabel="Concentration (mol/L)")
+    display(p)
+end
+
+@testset "test_FLUMO_pulse_batch_processing" begin
+    pulse_times = [1.0, 2.0, 3.0, 4.0, 5.0]
+    mP_pulses = [0.1, 0.2, 0.2, 0.5, 0.1]
+    mD_pulses = [0.1, 0.1, 0.1, 0.1, 0.1]
+    mC_pulses = [0.4, 0.2, 0.2, 0.1, 0.3]
+    V_pulses = [0.2, 0.2, 0.2, 0.2, 0.2]
+    sys = FLUMO_COMBINED_6(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses)
+    p = (sys.reactor.c_Din => 5, sys.kinetics.a_n => 1.0, sys.kinetics.b_n => 1.0, 
+        sys.kinetics.a_a => 1.0, sys.kinetics.a_ac => 1.0, sys.kinetics.a_ic => 1.0,
+        sys.kinetics.a_nc => 1.0, sys.kinetics.a_cn => 1.0
+    )
+    u0 = [sys.reactor.D => 1.0, sys.reactions_ODE.I => 1.0, sys.reactions_ODE.A => 0.0, 
+        sys.reactions_ODE.C => 0.5, sys.reactions_ODE.IC => 0.0, sys.reactions_ODE.NC => 0.0,
+        sys.reactions_ODE.N => 0.0, sys.reactor.V => 1.0
+    ]
+    tspan = (0.,5.)
+    oprob = ODEProblem(sys, u0, tspan, p)
+    osol  = solve(oprob, Tsit5())
+    @test osol.retcode == Success
+    p = plot(osol, title = "Testset MTK Catalyst Connections", xlabel="Time (h)", ylabel="Concentration (mol/L)")
+    display(p)
 end
