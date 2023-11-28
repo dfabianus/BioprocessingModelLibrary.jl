@@ -28,7 +28,7 @@ end
     end
 end
 
-@mtkmodel FLUMO_ReactorDynamics2 begin
+@mtkmodel FLUMO_ReactorDynamics3 begin
     @parameters begin
         c_Din
     end
