@@ -28,37 +28,6 @@ end
     end
 end
 
-@mtkmodel FLUMO_ReactorDynamics3 begin
-    @parameters begin
-        c_Din
-    end
-    @variables begin
-        F_in(t)
-        V(t)
-        I(t)
-        N(t)
-        A(t)
-        D(t)
-        P(t)
-        cI(t)
-        cN(t)
-        cA(t)
-        cD(t)
-        cP(t)
-    end
-    @equations begin
-        Dt(V) ~ F_in
-        Dt(D) ~ F_in * c_Din
-        P ~ I + N
-        F_in ~ 0.0
-        cI  ~ I / V
-        cN  ~ N / V
-        cA  ~ A / V
-        cD  ~ D / V
-        cP  ~ P / V
-    end
-end
-
 @mtkmodel FLUMO_Kinetics1 begin
     @parameters begin
         a_n
@@ -80,12 +49,12 @@ end
         D(t)
     end
     @equations begin
-        k_n ~ a_n * (1 + D) ^ b_n
-        k_a ~ a_a * (1 + D) ^ b_a
-        k_ac ~ a_ac
-        k_ic ~ a_ic
-        k_nc ~ a_nc
-        k_cn ~ a_cn
+        k_n ~ maximum([0, a_n * (1 + D) ^ b_n])
+        k_a ~ maximum([0, a_a * (1 + D) ^ b_a])
+        k_ac ~ maximum([0, a_ac])
+        k_ic ~ maximum([0, a_ic])
+        k_nc ~ maximum([0, a_nc])
+        k_cn ~ maximum([0, a_cn])
     end
 end
 
