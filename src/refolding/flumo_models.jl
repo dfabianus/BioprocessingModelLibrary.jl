@@ -64,6 +64,7 @@ end
         a_n
         b_n
         a_a
+        b_a
         a_ac 
         a_ic
         a_nc
@@ -80,7 +81,7 @@ end
     end
     @equations begin
         k_n ~ a_n * (1 + D) ^ b_n
-        k_a ~ a_a
+        k_a ~ a_a * (1 + D) ^ b_a
         k_ac ~ a_ac
         k_ic ~ a_ic
         k_nc ~ a_nc
