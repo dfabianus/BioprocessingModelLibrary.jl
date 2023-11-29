@@ -186,7 +186,7 @@ end
     V_pulses = [0.2, 0.2, 0.2, 0.2, 0.2]
     sys = FLUMO_COMBINED_6(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses)
     p = (sys.reactor.c_Din => 5, sys.kinetics.a_n => 1.0, sys.kinetics.b_n => 1.0, 
-        sys.kinetics.a_a => 1.0, sys.kinetics.a_ac => 1.0, sys.kinetics.a_ic => 1.0,
+        sys.kinetics.a_a => 1.0, sys.kinetics.b_a => 1.0, sys.kinetics.a_ac => 1.0, sys.kinetics.a_ic => 1.0,
         sys.kinetics.a_nc => 1.0, sys.kinetics.a_cn => 1.0
     )
     u0 = [sys.reactor.D => 1.0±0.1, sys.reactions_ODE.I => 1.0±0.1, sys.reactions_ODE.A => 0.0, 
