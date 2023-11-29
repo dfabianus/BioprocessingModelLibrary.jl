@@ -197,7 +197,28 @@ end
     oprob = ODEProblem(sys, u0, tspan, p)
     osol  = solve(oprob, Tsit5())
     @test osol.retcode == Success
-    ts = range(tspan..., length=100)
-    p = plot(ts, osol(ts, idxs=2).u, label = "I(t)", title = "Testset MTK Catalyst Connections", xlabel="Time (h)", ylabel="Concentration (mol/L)")
+    ts = range(tspan..., length=1000)
+    p = plot(ts, osol(ts, idxs=sys.reactions_ODE.I).u, label = "I(t)")
+    p = plot!(ts, osol(ts, idxs=sys.reactions_ODE.A).u, label = "A(t)")
     display(p)
 end
+
+pulse_times = [1.0, 2.0, 3.0, 4.0, 5.0]
+mP_pulses = [0.1, 0.2, 0.2, 0.5, 0.1]
+mD_pulses = [0.1, 0.1, 0.1, 0.1, 0.1]
+V_pulses = [0.2, 0.2, 0.2, 0.2, 0.2]
+sys = FLUMO_LDH(pulse_times, mP_pulses, mD_pulses, V_pulses)
+p = (sys.reactor.c_Din => 5, sys.kinetics.a_n => 1.0, sys.kinetics.b_n => 1.0, 
+        sys.kinetics.a_a => 1.0, sys.kinetics.b_a => 1.0
+    )
+    u0 = [sys.reactor.D => 1.0±0.1, sys.reactions_ODE.I => 1.0±0.1, sys.reactions_ODE.A => 0.0, 
+        sys.reactions_ODE.N => 0.0, sys.reactor.V => 1.0±0.05
+    ]
+    tspan = (0.,5.)
+    oprob = ODEProblem(sys, u0, tspan, p)
+    osol  = solve(oprob, Tsit5())
+    @test osol.retcode == Success
+    ts = range(tspan..., length=1000)
+    p = plot(ts, osol(ts, idxs=sys.reactions_ODE.I).u, label = "I(t)")
+    p = plot!(ts, osol(ts, idxs=sys.reactions_ODE.A).u, label = "A(t)")
+    display(p)

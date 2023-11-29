@@ -171,3 +171,37 @@ function FLUMO_COMBINED_6(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses
     ))
     return structural_simplify(combined)
 end
+
+function FLUMO_LDH(pulse_times, mP_pulses, mD_pulses, V_pulses)
+    @parameters c_Din a_n b_n a_a b_a
+    @variables begin
+        V(t)
+        D(t)
+        I(t)
+        k_n(t)
+        k_a(t)
+        F_in(t)
+    end
+
+    eqns = [
+        Dt(V) ~ F_in
+        Dt(D) ~ F_in * c_Din
+        F_in ~ 0.0
+        k_n ~ maximum([0, a_n * (1 + D) ^ b_n])
+        k_a ~ maximum([0, a_a * (1 + D) ^ b_a])
+        (@reaction $k_a,  2*I --> A)
+        (@reaction $k_n,  I --> N)
+    ]
+
+    mds = D .~ D .+ mD_pulses
+    mps = I .~ I .+ mP_pulses
+    Vs =  V .~ V .+ V_pulses
+
+    @named mdl = ReactionSystem(eqns, t; discrete_events = vcat(
+        [[a] => [b] for (a,b) in zip(pulse_times, mds)],
+        [[a] => [b] for (a,b) in zip(pulse_times, mps)],
+        [[a] => [b] for (a,b) in zip(pulse_times, Vs)],
+    ))
+
+    return structural_simplify(convert(ODESystem, mdl))
+end
