@@ -203,12 +203,13 @@ end
     display(p)
 end
 
-pulse_times = [1.0, 2.0, 3.0, 4.0, 5.0]
-mP_pulses = [0.1, 0.2, 0.2, 0.5, 0.1]
-mD_pulses = [0.1, 0.1, 0.1, 0.1, 0.1]
-V_pulses = [0.2, 0.2, 0.2, 0.2, 0.2]
-sys = FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, V_pulses)
-p = (sys.c_Din => 5, sys.a_n => 1.0, sys.b_n => 1.0, 
+@testset "test_FLUMO_MECH_pulse_cofactor" begin
+    pulse_times = [1.0, 2.0, 3.0, 4.0, 5.0]
+    mP_pulses = [0.1, 0.2, 0.2, 0.5, 0.1]
+    mD_pulses = [0.1, 0.1, 0.1, 0.1, 0.1]
+    V_pulses = [0.2, 0.2, 0.2, 0.2, 0.2]
+    sys = FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, V_pulses)
+    p = (sys.c_Din => 5, sys.a_n => 1.0, sys.b_n => 1.0, 
         sys.a_a => 1.0, sys.b_a => 1.0, sys.a_cn => 1.0, sys.a_ic => 1.0, sys.a_nc => 1.0
     )
     u0 = [sys.D => 1.0±0.1, sys.I => 1.0±0.1, sys.A => 0.0, 
@@ -224,3 +225,4 @@ p = (sys.c_Din => 5, sys.a_n => 1.0, sys.b_n => 1.0,
     p = plot!(ts, osol(ts, idxs=sys.IC).u, label = "IC(t)")
     p = plot!(ts, osol(ts, idxs=sys.NC).u, label = "NC(t)")
     display(p)
+end
