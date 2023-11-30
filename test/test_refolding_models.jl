@@ -208,7 +208,7 @@ end
     mP_pulses = [0.1, 0.2, 0.2, 0.5, 0.1]
     mD_pulses = [0.1, 0.1, 0.1, 0.1, 0.1]
     V_pulses = [0.2, 0.2, 0.2, 0.2, 0.2]
-    sys = FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, V_pulses)
+    sys = FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, zeros(5), V_pulses)
     p = (sys.c_Din => 5, sys.a_n => 1.0, sys.b_n => 1.0, 
         sys.a_a => 1.0, sys.b_a => 1.0, sys.a_cn => 1.0, sys.a_ic => 1.0, sys.a_nc => 1.0
     )

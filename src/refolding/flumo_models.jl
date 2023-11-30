@@ -172,7 +172,7 @@ function FLUMO_COMBINED_6(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses
     return structural_simplify(combined)
 end
 
-function FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, V_pulses)
+function FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses)
     @parameters c_Din a_n b_n a_a b_a a_cn a_ic a_nc
     @variables begin
         P(t)
@@ -228,11 +228,13 @@ function FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, V_pulses)
 
     mds = D .~ D .+ mD_pulses
     mps = I .~ I .+ mP_pulses
+    mcs = C .~ C .+ mC_pulses
     Vs =  V .~ V .+ V_pulses
 
     @named mdl = ReactionSystem(eqns, t; discrete_events = vcat(
         [[a] => [b] for (a,b) in zip(pulse_times, mds)],
         [[a] => [b] for (a,b) in zip(pulse_times, mps)],
+        [[a] => [b] for (a,b) in zip(pulse_times, mcs)],
         [[a] => [b] for (a,b) in zip(pulse_times, Vs)],
     ))
 
