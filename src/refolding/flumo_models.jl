@@ -172,14 +172,17 @@ function FLUMO_COMBINED_6(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses
     return structural_simplify(combined)
 end
 
-function FLUMO_LDH(pulse_times, mP_pulses, mD_pulses, V_pulses)
-    @parameters c_Din a_n b_n a_a b_a
+function FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, V_pulses)
+    @parameters c_Din a_n b_n a_a b_a a_cn a_ic a_nc
     @variables begin
         V(t)
         D(t)
         I(t)
-        k_n(t)
         k_a(t)
+        k_n(t)
+        k_cn(t)
+        k_ic(t)
+        k_nc(t)
         F_in(t)
     end
 
@@ -187,10 +190,17 @@ function FLUMO_LDH(pulse_times, mP_pulses, mD_pulses, V_pulses)
         Dt(V) ~ F_in
         Dt(D) ~ F_in * c_Din
         F_in ~ 0.0
-        k_n ~ maximum([0, a_n * (1 + D) ^ b_n])
         k_a ~ maximum([0, a_a * (1 + D) ^ b_a])
+        k_n ~ maximum([0, a_n * (1 + D) ^ b_n])
+        k_cn ~ maximum([0, a_cn])
+        k_ic ~ maximum([0, a_ic])
+        k_nc ~ maximum([0, a_nc])
+
         (@reaction $k_a,  2*I --> A)
         (@reaction $k_n,  I --> N)
+        (@reaction $k_cn, N + C --> NC)
+        (@reaction $k_ic, I + C --> IC)
+        (@reaction $k_nc, IC --> NC)
     ]
 
     mds = D .~ D .+ mD_pulses
