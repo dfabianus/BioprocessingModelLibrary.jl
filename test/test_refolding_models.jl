@@ -215,7 +215,7 @@ end
     u0 = [sys.D => 1.0±0.1, sys.I => 1.0±0.1, sys.A => 0.0, 
         sys.N => 0.0, sys.V => 1.0±0.05, sys.C => 0.1±0.01, sys.IC => 0, sys.NC => 0
     ]
-    tspan = (0.,5.)
+    tspan = (0.,6.)
     oprob = ODEProblem(sys, u0, tspan, p)
     osol  = solve(oprob, Tsit5())
     @test osol.retcode == Success
@@ -224,5 +224,6 @@ end
     p = plot!(ts, osol(ts, idxs=sys.A).u, label = "A(t)")
     p = plot!(ts, osol(ts, idxs=sys.IC).u, label = "IC(t)")
     p = plot!(ts, osol(ts, idxs=sys.NC).u, label = "NC(t)")
+    p = plot!(ts, osol(ts, idxs=sys.cP).u, label = "cP(t)")
     display(p)
 end

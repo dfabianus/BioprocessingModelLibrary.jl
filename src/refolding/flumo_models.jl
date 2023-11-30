@@ -175,26 +175,49 @@ end
 function FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, V_pulses)
     @parameters c_Din a_n b_n a_a b_a a_cn a_ic a_nc
     @variables begin
+        P(t)
         V(t)
         D(t)
         I(t)
+        N(t)
+        A(t)
+        NC(t)
+        IC(t)
+        C(t)
         k_a(t)
         k_n(t)
         k_cn(t)
         k_ic(t)
         k_nc(t)
         F_in(t)
+        cI(t)
+        cN(t)
+        cA(t)
+        cD(t)
+        cP(t)
+        cNC(t)
+        cIC(t)
+        cC(t)
     end
 
     eqns = [
         Dt(V) ~ F_in
         Dt(D) ~ F_in * c_Din
+        P ~ I + N + NC + IC # +2*A
         F_in ~ 0.0
         k_a ~ maximum([0, a_a * (1 + D) ^ b_a])
         k_n ~ maximum([0, a_n * (1 + D) ^ b_n])
         k_cn ~ maximum([0, a_cn])
         k_ic ~ maximum([0, a_ic])
         k_nc ~ maximum([0, a_nc])
+        cI  ~ I / V
+        cN  ~ N / V
+        cA  ~ A / V
+        cD  ~ D / V
+        cP  ~ P / V
+        cNC ~ NC / V
+        cIC ~ IC / V
+        cC  ~ C / V
 
         (@reaction $k_a,  2*I --> A)
         (@reaction $k_n,  I --> N)
