@@ -173,7 +173,7 @@ function FLUMO_COMBINED_6(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses
 end
 
 function FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses)
-    @parameters c_Din a_n b_n a_a b_a a_cn a_ic a_nc
+    @parameters a_n b_n a_a b_a a_cn a_ic a_nc p1 p2 p3 p4 p5
     @variables begin
         P(t)
         V(t)
@@ -189,7 +189,6 @@ function FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses)
         k_cn(t)
         k_ic(t)
         k_nc(t)
-        F_in(t)
         cI(t)
         cN(t)
         cA(t)
@@ -198,13 +197,14 @@ function FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses)
         cNC(t)
         cIC(t)
         cC(t)
+        AEW(t)#
+        F(t)
     end
 
     eqns = [
-        Dt(V) ~ F_in
-        Dt(D) ~ F_in * c_Din
+        Dt(V) ~ 0
+        Dt(D) ~ 0
         P ~ I + N + NC + IC # +2*A
-        F_in ~ 0.0
         k_a ~ maximum([0, a_a * (1 + D) ^ b_a])
         k_n ~ maximum([0, a_n * (1 + D) ^ b_n])
         k_cn ~ maximum([0, a_cn])
@@ -218,7 +218,9 @@ function FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses)
         cNC ~ NC / V
         cIC ~ IC / V
         cC  ~ C / V
-
+        F ~ p1 * cP / (p2 + cP)
+        AEW ~ -(abs(p3) * ((cN+cA)/cP) / (abs(p4) + ((cN+cA)/cP)) + abs(p5)*((cN+cA)/cP))
+        
         (@reaction $k_a,  2*I --> A)
         (@reaction $k_n,  I --> N)
         (@reaction $k_cn, N + C --> NC)
@@ -240,3 +242,8 @@ function FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses)
 
     return structural_simplify(convert(ODESystem, mdl))
 end
+
+# function FLUMO_output_fun(p)
+#     monod = (x,p) ->  # monod
+#     model_aew = (x,p) -> abs(p[3]) .* x ./ (abs(p[4]) .+ x) .+ abs(p[5]).*x
+# end

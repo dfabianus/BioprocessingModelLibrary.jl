@@ -209,8 +209,9 @@ end
     mD_pulses = [0.1, 0.1, 0.1, 0.1, 0.1]
     V_pulses = [0.2, 0.2, 0.2, 0.2, 0.2]
     sys = FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, zeros(5), V_pulses)
-    p = (sys.c_Din => 5, sys.a_n => 1.0, sys.b_n => 1.0, 
-        sys.a_a => 1.0, sys.b_a => 1.0, sys.a_cn => 1.0, sys.a_ic => 1.0, sys.a_nc => 1.0
+    p = (sys.a_n => 1.0, sys.b_n => 1.0, 
+        sys.a_a => 1.0, sys.b_a => 1.0, sys.a_cn => 1.0, sys.a_ic => 1.0, sys.a_nc => 1.0,
+        sys.p1 => 1.0, sys.p2 => 1.0, sys.p3 => 1.0, sys.p4 => 1.0, sys.p5 => 1.0
     )
     u0 = [sys.D => 1.0±0.1, sys.I => 1.0±0.1, sys.A => 0.0, 
         sys.N => 0.0, sys.V => 1.0±0.05, sys.C => 0.1±0.01, sys.IC => 0, sys.NC => 0
@@ -226,4 +227,6 @@ end
     p = plot!(ts, osol(ts, idxs=sys.NC).u, label = "NC(t)")
     p = plot!(ts, osol(ts, idxs=sys.cP).u, label = "cP(t)")
     display(p)
+    p2 = plot(ts, osol(ts, idxs=sys.AEW).u, label = "AEW(t)")
+    display(p2)
 end
