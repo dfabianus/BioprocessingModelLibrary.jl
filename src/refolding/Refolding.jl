@@ -5,6 +5,7 @@ export INAM, INAM_network
 export FLUMO_COMBINED_3, FLUMO_COMBINED_4, FLUMO_COMBINED_5, FLUMO_COMBINED_6
 export FLUMO_pulsing_events
 export FLUMO_MECH
+export FLUMO_SOFTSENSOR
 
 using ModelingToolkit
 using Catalyst

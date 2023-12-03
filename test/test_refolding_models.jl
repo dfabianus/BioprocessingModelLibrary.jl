@@ -225,8 +225,25 @@ end
     p = plot!(ts, osol(ts, idxs=sys.A).u, label = "A(t)")
     p = plot!(ts, osol(ts, idxs=sys.IC).u, label = "IC(t)")
     p = plot!(ts, osol(ts, idxs=sys.NC).u, label = "NC(t)")
-    p = plot!(ts, osol(ts, idxs=sys.cP).u, label = "cP(t)")
+    p = plot!(ts, osol(ts, idxs=sys.cP+2*sys.cA).u, label = "cP(t)")
     display(p)
     p2 = plot(ts, osol(ts, idxs=sys.AEW).u, label = "AEW(t)")
     display(p2)
 end
+
+
+    @named sys = FLUMO_SOFTSENSOR()
+    sys_simp = structural_simplify(sys)
+    p = (sys_simp.f_IAEW => 1.0, sys_simp.p1 => 1.0, 
+        sys_simp.p2 => 1.0, 
+    )
+    u0 = [sys_simp.I => 1.0, sys_simp.N => 0.0,
+    ]
+    tspan = (0.,6.)
+    oprob = ODEProblem(sys_simp, u0, tspan, p)
+    osol  = solve(oprob)
+    @test osol.retcode == Success
+    ts = range(tspan..., length=1000)
+    p = plot(ts, osol(ts, idxs=sys_simp.I).u, label = "I(t)")
+    p = plot(ts, osol(ts, idxs=sys_simp.A).u, label = "A(t)", ylim=(0,150))
+    p = plot(ts, osol(ts, idxs=sys_simp.N).u, label = "N(t)")

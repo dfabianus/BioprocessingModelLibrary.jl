@@ -243,7 +243,47 @@ function FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses)
     return structural_simplify(convert(ODESystem, mdl))
 end
 
-# function FLUMO_output_fun(p)
-#     monod = (x,p) ->  # monod
-#     model_aew = (x,p) -> abs(p[3]) .* x ./ (abs(p[4]) .+ x) .+ abs(p[5]).*x
-# end
+@mtkmodel FLUMO_ReactorDynamics2 begin
+    @parameters begin
+        c_Din
+    end
+    @variables begin
+        F_in(t)
+        D(t)
+        V(t)
+    end
+    @equations begin
+        Dt(V) ~ F_in
+        Dt(D) ~ F_in * c_Din
+        F_in ~ 0.0
+    end
+end
+
+@mtkmodel FLUMO_SOFTSENSOR begin
+    @parameters begin
+        f_IAEW
+        p1
+        p2
+    end
+    @variables begin
+        I(t)
+        N(t)
+        A(t)
+        dIdt(t)
+        AEW(t)
+        dAEWdt(t)
+        F(t)
+    end
+    @equations begin
+        Dt(AEW) ~ dAEWdt
+        dIdt ~ f_IAEW * dAEWdt
+        Dt(I) ~ dIdt
+        I ~  N + A
+        F ~ p1 * (I+N) / (p2 + (I+N))
+        F ~ 1.0 + 0.1 * t
+        AEW ~ -1 * t
+    end
+end
+
+
+
