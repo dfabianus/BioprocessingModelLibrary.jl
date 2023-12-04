@@ -235,8 +235,8 @@ end
 
 #@testset "test_FLUMO_SOFTSENSOR" begin
     tx = collect(0.0:0.1:10.0)
-    F = map(x->23000.0-300*x, tx)
-    dAEWdt = map(x->2.5*exp(-0.5*x), tx)
+    F = map(x->23000.0-(300±30)*x, tx)
+    dAEWdt = map(x->2.5*exp((-0.5±0.04)*x), tx)
     function F_fun(t)
         xint = Interpolations.linear_interpolation(tx, F, extrapolation_bc=Line())
         return xint(t)
@@ -247,12 +247,15 @@ end
     end
     @register_symbolic F_fun(t)
     @register_symbolic dAEWdt_fun(t)
-    @named sys = FLUMO_SOFTSENSOR(F_fun, dAEWdt_fun)
+    pulse_times = [1.0, 2.0, 3.0, 4.0, 5.0]
+    mP_pulses = [0.1, 0.2, 0.2, 0.5, 0.1]
+    V_pulses = [0.2, 0.2, 0.2, 0.2, 0.2]
+    @named sys = FLUMO_SOFTSENSOR(F_fun, dAEWdt_fun, pulse_times, mP_pulses, V_pulses)
     sys_simp = structural_simplify(sys)
-    p = (sys_simp.f_IAEW => -0.15, sys_simp.F0 => 23000., 
-        sys_simp.P0 => 1.0, 
+    p = (sys_simp.f_IAEW => -0.15±0.01, sys_simp.F0 => 23000., 
+        sys_simp.P0 => 1.0±0.01, 
     )
-    u0 = [sys_simp.I => 1.0]
+    u0 = [sys_simp.I => 1.0±0., sys_simp.V => 1.0±0.]
     tspan = (0.,6.)
     oprob = ODEProblem(sys_simp, u0, tspan, p)
     osol  = solve(oprob)
