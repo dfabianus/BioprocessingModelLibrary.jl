@@ -6,6 +6,8 @@ using BioprocessingModelLibrary.Refolding
 using MonteCarloMeasurements
 using Plots
 using Test
+using Interpolations
+using DifferentialEquations
 
 @testset "test_Kiefhaber" begin
     tspan = (0.0, 10.0)
@@ -231,19 +233,35 @@ end
     display(p2)
 end
 
-
-    @named sys = FLUMO_SOFTSENSOR()
+#@testset "test_FLUMO_SOFTSENSOR" begin
+    tx = collect(0.0:0.1:10.0)
+    F = map(x->23000.0-300*x, tx)
+    dAEWdt = map(x->2.5*exp(-0.5*x), tx)
+    function F_fun(t)
+        xint = Interpolations.linear_interpolation(tx, F, extrapolation_bc=Line())
+        return xint(t)
+    end
+    function dAEWdt_fun(t)
+        xint = Interpolations.linear_interpolation(tx, dAEWdt, extrapolation_bc=Line())
+        return xint(t)
+    end
+    @register_symbolic F_fun(t)
+    @register_symbolic dAEWdt_fun(t)
+    @named sys = FLUMO_SOFTSENSOR(F_fun, dAEWdt_fun)
     sys_simp = structural_simplify(sys)
-    p = (sys_simp.f_IAEW => 1.0, sys_simp.p1 => 1.0, 
-        sys_simp.p2 => 1.0, 
+    p = (sys_simp.f_IAEW => -0.15, sys_simp.F0 => 23000., 
+        sys_simp.P0 => 1.0, 
     )
-    u0 = [sys_simp.I => 1.0, sys_simp.N => 0.0,
-    ]
+    u0 = [sys_simp.I => 1.0]
     tspan = (0.,6.)
     oprob = ODEProblem(sys_simp, u0, tspan, p)
     osol  = solve(oprob)
     @test osol.retcode == Success
     ts = range(tspan..., length=1000)
-    p = plot(ts, osol(ts, idxs=sys_simp.I).u, label = "I(t)")
-    p = plot(ts, osol(ts, idxs=sys_simp.A).u, label = "A(t)", ylim=(0,150))
-    p = plot(ts, osol(ts, idxs=sys_simp.N).u, label = "N(t)")
+    p = plot(ts, osol(ts, idxs=sys_simp.dAEWdt).u, label = "dAEWdt(t)")
+    p2 = plot(ts, osol(ts, idxs=sys_simp.I).u, label = "I(t)")
+    p2 = plot!(ts, osol(ts, idxs=sys_simp.N).u, label = "N(t)")
+    p2 = plot!(ts, osol(ts, idxs=sys_simp.A).u, label = "A(t)")
+    p3 = plot(ts, osol(ts, idxs=sys_simp.F).u, label = "F(t)")
+    plot(p, p3, p2, layout=(1,3), xlabel="Time (h)")
+#end

@@ -243,47 +243,43 @@ function FLUMO_MECH(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses)
     return structural_simplify(convert(ODESystem, mdl))
 end
 
-@mtkmodel FLUMO_ReactorDynamics2 begin
-    @parameters begin
-        c_Din
-    end
-    @variables begin
-        F_in(t)
-        D(t)
-        V(t)
-    end
-    @equations begin
-        Dt(V) ~ F_in
-        Dt(D) ~ F_in * c_Din
-        F_in ~ 0.0
-    end
-end
 
-@mtkmodel FLUMO_SOFTSENSOR begin
+
+function FLUMO_SOFTSENSOR(F_fun, dAEWdt_fun; name)
     @parameters begin
         f_IAEW
-        p1
-        p2
+        F0 = F_fun(0)
+        P0
     end
     @variables begin
         I(t)
         N(t)
         A(t)
         dIdt(t)
-        AEW(t)
         dAEWdt(t)
         F(t)
+        P(t)
     end
-    @equations begin
-        Dt(AEW) ~ dAEWdt
+    equations = [
+        dAEWdt ~ dAEWdt_fun(t)
         dIdt ~ f_IAEW * dAEWdt
         Dt(I) ~ dIdt
-        I ~  N + A
-        F ~ p1 * (I+N) / (p2 + (I+N))
-        F ~ 1.0 + 0.1 * t
-        AEW ~ -1 * t
-    end
+        I + N ~ P0/F0 * F
+        I + N + A ~ P
+        P ~ P0
+        F ~ F_fun(t)
+    ]
+    return ODESystem(equations, t; name=name)
+end
+
+function FLUMO_SOFTSENSOR_I()
+    dAEWdt 
 end
 
 
+A = [1 1 0; 0 1 1; 1 1 1]
+y = [12, 12, 20]
+A\y
 
+y = @variables NA IN INA
+A\y
