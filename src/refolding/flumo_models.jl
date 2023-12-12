@@ -267,27 +267,21 @@ function FLUMO_SOFTSENSOR(F_fun, dAEWdt_fun, pulse_times, mP_pulses, V_pulses; n
         Dt(I) ~ dIdt
         I + N ~ P0/F0 * F
         I + N + A ~ P
-        P ~ P0
+        Dt(P) ~ 0
         F ~ F_fun(t)
         Dt(V) ~ 0
     ]
 
     mps = I .~ (I*V .+ mP_pulses) ./ V
     Vs =  V .~ V .+ V_pulses
+    Ps = P .~ (P*V .+ mP_pulses) ./ V
     return ODESystem(equations, t; name=name, discrete_events = vcat(
         [[a] => [b] for (a,b) in zip(pulse_times, mps)],
         [[a] => [b] for (a,b) in zip(pulse_times, Vs)],
+        [[a] => [b] for (a,b) in zip(pulse_times, Ps)],
     ))
 end
 
 function FLUMO_SOFTSENSOR_I()
     dAEWdt 
 end
-
-
-A = [1 1 0; 0 1 1; 1 1 1]
-y = [12, 12, 20]
-A\y
-
-y = @variables NA IN INA
-A\y
