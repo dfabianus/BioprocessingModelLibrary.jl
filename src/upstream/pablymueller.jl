@@ -66,5 +66,5 @@ function Pablymueller(induction_time)
         [[a] => [b] for (a,b) in zip(pulse_times, Vs)],
     ))
 
-    return structural_simplify(convert(ODESystem, mdl))
+    return complete(structural_simplify(convert(ODESystem, mdl)))
 end

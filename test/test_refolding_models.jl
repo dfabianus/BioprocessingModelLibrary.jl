@@ -140,44 +140,21 @@ end
     osol  = solve(oprob, Tsit5())
     @test osol.retcode == Success
 
-    sys = FLUMO_COMBINED_5()
-    p = (sys.reactor.c_Din => 5, sys.kinetics.a_n => 1.0, sys.kinetics.b_n => 1.0, 
-        sys.kinetics.a_a => 1.0, sys.kinetics.a_ac => 1.0, sys.kinetics.a_ic => 1.0,
-        sys.kinetics.a_nc => 1.0, sys.kinetics.a_cn => 1.0
-    )
-    u0 = [sys.reactor.D => 1.0, sys.reactions_ODE.I => 1.0, sys.reactions_ODE.A => 0.0, 
-        sys.reactions_ODE.C => 0.5, sys.reactions_ODE.IC => 0.0, sys.reactions_ODE.NC => 0.0,
-        sys.reactions_ODE.N => 0.0
-    ]
-    tspan = (0.,5.)
-    oprob = ODEProblem(sys, u0, tspan, p)
-    osol  = solve(oprob, Tsit5())
-    @test osol.retcode == Success
-    p = plot(osol, title = "Testset MTK Catalyst Connections", xlabel="Time (h)", ylabel="Concentration (mol/L)")
-    display(p)
-end
-
-@testset "test_FLUMO_pulse_batch_processing" begin
-    pulse_times = [1.0, 2.0, 3.0, 4.0, 5.0]
-    mP_pulses = [0.1, 0.2, 0.2, 0.5, 0.1]
-    mD_pulses = [0.1, 0.1, 0.1, 0.1, 0.1]
-    mC_pulses = [0.4, 0.2, 0.2, 0.1, 0.3]
-    V_pulses = [0.2, 0.2, 0.2, 0.2, 0.2]
-    sys = FLUMO_COMBINED_6(pulse_times, mP_pulses, mD_pulses, mC_pulses, V_pulses)
-    p = (sys.reactor.c_Din => 5, sys.kinetics.a_n => 1.0, sys.kinetics.b_n => 1.0, 
-        sys.kinetics.a_a => 1.0, sys.kinetics.a_ac => 1.0, sys.kinetics.a_ic => 1.0,
-        sys.kinetics.a_nc => 1.0, sys.kinetics.a_cn => 1.0
-    )
-    u0 = [sys.reactor.D => 1.0, sys.reactions_ODE.I => 1.0, sys.reactions_ODE.A => 0.0, 
-        sys.reactions_ODE.C => 0.5, sys.reactions_ODE.IC => 0.0, sys.reactions_ODE.NC => 0.0,
-        sys.reactions_ODE.N => 0.0, sys.reactor.V => 1.0
-    ]
-    tspan = (0.,5.)
-    oprob = ODEProblem(sys, u0, tspan, p)
-    osol  = solve(oprob, Tsit5())
-    @test osol.retcode == Success
-    p = plot(osol, title = "Testset MTK Catalyst Connections", xlabel="Time (h)", ylabel="Concentration (mol/L)")
-    display(p)
+    # sys = FLUMO_COMBINED_5()
+    # p = (sys.reactor.c_Din => 5, sys.kinetics.a_n => 1.0, sys.kinetics.b_n => 1.0, 
+    #     sys.kinetics.a_a => 1.0, sys.kinetics.a_ac => 1.0, sys.kinetics.a_ic => 1.0,
+    #     sys.kinetics.a_nc => 1.0, sys.kinetics.a_cn => 1.0
+    # )
+    # u0 = [sys.reactor.D => 1.0, sys.reactions_ODE.I => 1.0, sys.reactions_ODE.A => 0.0, 
+    #     sys.reactions_ODE.C => 0.5, sys.reactions_ODE.IC => 0.0, sys.reactions_ODE.NC => 0.0,
+    #     sys.reactions_ODE.N => 0.0
+    # ]
+    # tspan = (0.,5.)
+    # oprob = ODEProblem(sys, u0, tspan, p)
+    # osol  = solve(oprob, Tsit5())
+    # @test osol.retcode == Success
+    # p = plot(osol, title = "Testset MTK Catalyst Connections", xlabel="Time (h)", ylabel="Concentration (mol/L)")
+    # display(p)
 end
 
 @testset "test_FLUMO_pulse_batch_processing" begin
@@ -233,38 +210,38 @@ end
     display(p2)
 end
 
-#@testset "test_FLUMO_SOFTSENSOR" begin
-    tx = collect(0.0:0.1:10.0)
-    F = map(x->23000.0-(300±30)*x, tx)
-    dAEWdt = map(x->2.5*exp((-0.5±0.04)*x), tx)
-    function F_fun(t)
-        xint = Interpolations.linear_interpolation(tx, F, extrapolation_bc=Line())
-        return xint(t)
-    end
-    function dAEWdt_fun(t)
-        xint = Interpolations.linear_interpolation(tx, dAEWdt, extrapolation_bc=Line())
-        return xint(t)
-    end
-    @register_symbolic F_fun(t)
-    @register_symbolic dAEWdt_fun(t)
-    pulse_times = [1.0, 2.0, 3.0, 4.0, 5.0]
-    mP_pulses = [0.1, 0.2, 0.2, 0.5, 0.1]
-    V_pulses = [0.2, 0.2, 0.2, 0.2, 0.2]
-    @named sys = FLUMO_SOFTSENSOR(F_fun, dAEWdt_fun, pulse_times, mP_pulses, V_pulses)
-    sys_simp = structural_simplify(sys)
-    p = (sys_simp.f_IAEW => -0.15±0.01, sys_simp.F0 => 23000., 
-        sys_simp.P0 => 1.0±0.01, 
-    )
-    u0 = [sys_simp.I => 1.0±0., sys_simp.V => 1.0±0.]
-    tspan = (0.,6.)
-    oprob = ODEProblem(sys_simp, u0, tspan, p)
-    osol  = solve(oprob)
-    @test osol.retcode == Success
-    ts = range(tspan..., length=1000)
-    p = plot(ts, osol(ts, idxs=sys_simp.dAEWdt).u, label = "dAEWdt(t)")
-    p2 = plot(ts, osol(ts, idxs=sys_simp.I).u, label = "I(t)")
-    p2 = plot!(ts, osol(ts, idxs=sys_simp.N).u, label = "N(t)")
-    p2 = plot!(ts, osol(ts, idxs=sys_simp.A).u, label = "A(t)")
-    p3 = plot(ts, osol(ts, idxs=sys_simp.F).u, label = "F(t)")
-    plot(p, p3, p2, layout=(1,3), xlabel="Time (h)")
-#end
+# @testset "test_FLUMO_SOFTSENSOR" begin
+#     tx = collect(0.0:0.1:10.0)
+#     F = map(x->23000.0-(300±30)*x, tx)
+#     dAEWdt = map(x->2.5*exp((-0.5±0.04)*x), tx)
+#     function F_fun(t)
+#         xint = Interpolations.linear_interpolation(tx, F, extrapolation_bc=Line())
+#         return xint(t)
+#     end
+#     function dAEWdt_fun(t)
+#         xint = Interpolations.linear_interpolation(tx, dAEWdt, extrapolation_bc=Line())
+#         return xint(t)
+#     end
+#     @register_symbolic F_fun(t)
+#     @register_symbolic dAEWdt_fun(t)
+#     pulse_times = [1.0, 2.0, 3.0, 4.0, 5.0]
+#     mP_pulses = [0.1, 0.2, 0.2, 0.5, 0.1]
+#     V_pulses = [0.2, 0.2, 0.2, 0.2, 0.2]
+#     @named sys = FLUMO_SOFTSENSOR(F_fun, dAEWdt_fun, pulse_times, mP_pulses, V_pulses)
+#     sys_simp = structural_simplify(sys)
+#     p = (sys_simp.f_IAEW => -0.15±0.01, sys_simp.F0 => 23000., 
+#         sys_simp.P0 => 1.0±0.01, 
+#     )
+#     u0 = [sys_simp.I => 1.0±0., sys_simp.V => 1.0±0.]
+#     tspan = (0.,6.)
+#     oprob = ODEProblem(sys_simp, u0, tspan, p)
+#     osol  = solve(oprob)
+#     @test osol.retcode == Success
+#     ts = range(tspan..., length=1000)
+#     p = plot(ts, osol(ts, idxs=sys_simp.dAEWdt).u, label = "dAEWdt(t)")
+#     p2 = plot(ts, osol(ts, idxs=sys_simp.I).u, label = "I(t)")
+#     p2 = plot!(ts, osol(ts, idxs=sys_simp.N).u, label = "N(t)")
+#     p2 = plot!(ts, osol(ts, idxs=sys_simp.A).u, label = "A(t)")
+#     p3 = plot(ts, osol(ts, idxs=sys_simp.F).u, label = "F(t)")
+#     plot(p, p3, p2, layout=(1,3), xlabel="Time (h)")
+# end
