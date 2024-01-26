@@ -6,9 +6,11 @@ export FLUMO_COMBINED_3, FLUMO_COMBINED_4, FLUMO_COMBINED_5, FLUMO_COMBINED_6
 export FLUMO_pulsing_events
 export FLUMO_MECH
 export FLUMO_SOFTSENSOR
+export CIGSTEADY
 
 using ModelingToolkit
 using Catalyst
+import IfElse
 
 @parameters t
 Dt = Differential(t)

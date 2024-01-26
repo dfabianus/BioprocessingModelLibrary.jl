@@ -285,3 +285,53 @@ end
 function FLUMO_SOFTSENSOR_I()
     dAEWdt 
 end
+
+function CIGSTEADY(u1,u2,u3,t1; name)
+    @parameters begin
+        n = 2
+        I1 = 11
+        D1 = 4
+        a_n = 1.3343
+        b_n = -8.6824
+        a_a = 12.0465
+        b_a = -16.7869
+    end
+    @variables begin
+        V(t)
+        I(t)
+        N(t)
+        A(t)
+        F1(t)
+        F2(t)
+        F3(t)
+        P(t)
+        D(t)
+        Y(t)
+        Ncum(t)
+        Pcum(t)
+        k_a(t)
+        k_n(t)
+        tv(t)
+        STY(t)
+    end
+    equations = [
+        k_a ~ a_a * (1 + D) ^ b_a
+        k_n ~ a_n * (1 + D) ^ b_n
+        Dt(V) ~ F1 + F2 - F3
+        Dt(I) ~ -k_n * I - k_a * I^n - (F1+F2)/V * I + F1/V * I1
+        Dt(N) ~ k_n * I - (F1+F2)/V * N
+        Dt(A) ~ k_a * I^n - (F1+F2)/V * A
+        Dt(D) ~ - (F1+F2)/V * D + F1/V * D1
+        I + N + A ~ P
+        Dt(Ncum) ~ k_n * I 
+        Dt(Pcum) ~ F1/V * I1
+        STY ~ Ncum / t
+        Y ~ Ncum / Pcum
+        F1 ~ u1
+        F2 ~ IfElse.ifelse(t<t1,0,u2)
+        F3 ~ IfElse.ifelse(t<t1,0,u3)
+        tv ~ V/F3
+    ]
+
+    return ODESystem(equations, t; name=name)
+end
