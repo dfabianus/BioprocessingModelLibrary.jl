@@ -211,64 +211,57 @@ end
     display(p2)
 end
 
-function cigsol(u)
-    @named sys = CIGSTEADY(u...,6)
-    sys_simp = structural_simplify(sys)
-    u0 = [sys_simp.D => 0.0, sys_simp.I => 0.0, sys_simp.A => 0.0, 
-        sys_simp.N => 0.0, sys_simp.V => 1.2, sys_simp.Ncum => 0.0, sys_simp.Pcum => 0.0]
-    tspan = (0.,25.)
-    oprob = ODEProblem(sys_simp, u0, tspan, [])
-    return solve(oprob, Tsit5())
-end
+# function cigsol(u)
+#     @named sys = CIGSTEADY(u...,6)
+#     sys_simp = structural_simplify(sys)
+#     u0 = [sys_simp.D => 0.0, sys_simp.I => 0.0, sys_simp.A => 0.0, 
+#         sys_simp.N => 0.0, sys_simp.V => 1.2, sys_simp.Ncum => 0.0, sys_simp.Pcum => 0.0]
+#     tspan = (0.,25.)
+#     oprob = ODEProblem(sys_simp, u0, tspan, [])
+#     return solve(oprob, Tsit5())
+# end
 
-Fg = collect(range(start=0.01,stop=0.15,step=0.002))
-shuffle!(Fg)
-F3g = collect(range(start=0.1,stop=0.45,step=0.005))
-shuffle!(F3g)
-F1 = (Fg./11)
-u = [F1,F3g.-F1,F3g.+0*F1]
-ut = transpose(hcat(u...))
-us = map(i->ut[:,i], 1:size(ut,2))
-sols = []
-for u in us
-    #u = round.(u, digits=3)
-    push!(sols, cigsol(u))
-end
+# Fg = collect(range(start=0.01,stop=0.15,step=0.002))
+# shuffle!(Fg)
+# F3g = collect(range(start=0.1,stop=0.45,step=0.005))
+# shuffle!(F3g)
+# F1 = (Fg./11)
+# u = [F1,F3g.-F1,F3g.+0*F1]
+# ut = transpose(hcat(u...))
+# us = map(i->ut[:,i], 1:size(ut,2))
+# sols = []
+# for u in us
+#     push!(sols, cigsol(u))
+# end
 
-p = plot(sols[1], idxs=[:N])
-for sol in sols[2:end]
-    plot!(p, sol, idxs=[:N])
-end
-display(p)
-
-p = plot(osol, idxs=[:Y])
-p = plot(osol, idxs=[:Ncum, :Pcum])
-p = plot(osol, idxs=[:N, :I, :A, :P])
-p = plot(osol, idxs=[:V])
-p = plot(osol, idxs=[:D])
-p = plot(osol, idxs=[:tv])
-
-p0 = plot(sols[1], idxs=(:Pcum, :STY), label = "")
-for sol in sols[2:end]
-    plot!(p0, sol, idxs=(:Pcum, :STY), label = "")
-end
-
-p1 = plot(sols[1], idxs=(:Pcum, :Y), label = "")
-for sol in sols[2:end]
-    plot!(p1, sol, idxs=(:Pcum, :Y), label = "")
-end
-
-p2 = plot(sols[1], idxs=(:P, :STY), label = "")
-for sol in sols[2:end]
-    plot!(p2, sol, idxs=(:P, :STY), label = "")
-end
-
-p3 = plot(sols[1], idxs=(:Y, :STY), label = "")
-for sol in sols[2:end]
-    plot!(p3, sol, idxs=(:Y, :STY), label = "")
-end
-
-p4 = plot(p0,p1,p2,p3, layout=(2,2))
+# p = plot(sols[1], idxs=[:N])
+# for sol in sols[2:end]
+#     plot!(p, sol, idxs=[:N])
+# end
+# display(p)
+# p = plot(osol, idxs=[:Y])
+# p = plot(osol, idxs=[:Ncum, :Pcum])
+# p = plot(osol, idxs=[:N, :I, :A, :P])
+# p = plot(osol, idxs=[:V])
+# p = plot(osol, idxs=[:D])
+# p = plot(osol, idxs=[:tv])
+# p0 = plot(sols[1], idxs=(:Pcum, :STY), label = "")
+# for sol in sols[2:end]
+#     plot!(p0, sol, idxs=(:Pcum, :STY), label = "")
+# end
+# p1 = plot(sols[1], idxs=(:Pcum, :Y), label = "")
+# for sol in sols[2:end]
+#     plot!(p1, sol, idxs=(:Pcum, :Y), label = "")
+# end
+# p2 = plot(sols[1], idxs=(:P, :STY), label = "")
+# for sol in sols[2:end]
+#     plot!(p2, sol, idxs=(:P, :STY), label = "")
+# end
+# p3 = plot(sols[1], idxs=(:Y, :STY), label = "")
+# for sol in sols[2:end]
+#     plot!(p3, sol, idxs=(:Y, :STY), label = "")
+# end
+# p4 = plot(p0,p1,p2,p3, layout=(2,2))
 
 
 
