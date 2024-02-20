@@ -1,6 +1,6 @@
 module Upstream
 
-export Pablymueller
+export ColiModel
 
 using ModelingToolkit
 using Catalyst
@@ -8,6 +8,6 @@ using Catalyst
 @parameters t
 Dt = Differential(t)
 
-include("pablymueller.jl")
+include("colimodel_A.jl")
 
 end
